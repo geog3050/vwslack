@@ -1,3 +1,6 @@
+  def hawkid():
+    return(["Vivian Slack", vwslack"])
+
 import arcpy
 
 # Set environment
