@@ -4,4 +4,4 @@ Hi there! About me: I am currently in my third year of my undergraduate. Current
 
 In this repository, are my assignments and quizes that I have worked on this semester in GEOG:3050. This repository acts a place where I can store my codes, any files, and view revision history. 
 
-Attached is my CV
+Attached is my CV: [VWSlack_CV.pdf](https://github.com/geog3050/vwslack/files/15241488/VWSlack_CV.pdf)
