@@ -141,19 +141,22 @@ def attack_multiplier(attacker_type, defender_type):
     ######################
 
 def attack_multiplier(attacker_type, defender_type):
-    if attacker_type == 'Water' and defender_type == 'Fire':
-        return 2.5
-    elif attacker_type == 'Electric' and defender_type == 'Water':
-        return 1.3
-    elif attacker_type == 'Ground' and defender_type == 'Electric':
-        return 2.0
-    elif attacker_type == 'Fire' and defender_type == 'Grass':
-        return 3.0
-    elif attacker_type == 'Grass' and defender_type == 'Water':
-        return 1.5
-    else:
-        return 1
+    attack_multipliers = {
+        ("Water", "Fire"): 2.5,
+        ("Electric", "Water"): 1.3,
+        ("Ground", "Electric"): 2.0,
+        ("Fire", "Grass"): 3.0,
+        ("Grass", "Water"): 1.5
+    }
+    return attack_multipliers.get((attacker_type, defender_type), 1.0)
 
+attack_types = ["Water", "Electric", "Ground", "Fire", "Grass"]
+defense_types = ["Water", "Electric", "Ground", "Fire", "Grass"]
+
+for attacker_type in attack_types:
+    for defender_type in defense_types:
+        multiplier = attack_multiplier(attacker_type, defender_type)
+        print("Attacker: {}, Defender: {}, Multiplier: {}".format(attacker_type, defender_type, multiplier))
 
 def fight(participant1, participant2, first2attack):
     """
@@ -225,31 +228,37 @@ def fight(participant1, participant2, first2attack):
     rounds  = 0
     winner  = 1
 
-v1 = participant1[2]
-v2 = participant2[2]
-
-hp1 = v1
-hp2 = v2
-
-while hp1 > 0 and hp < 0:
-    if first2attack == 1:
-        multiplier = attack_multiplier(participant1[1],participant2[1])
-        damage = multiplier * participant1[3]
-        hp2 -=damage
-    else:
-        multiplier = attack_multiplier(participant2[1], participant1[1])
-        damage = multiplier * participant2[3]
-        hp1 -=damage
-
-    round += 1
-    first_attack = 3 - first_attack
-
-    if hp1 > 0:
-        winner = 1
-    else:
-        winner = 2
+def fight(participant1, participant2, first2attack):
+    rounds = 0
     
-    #return [winner, rounds]
+    variable1 = participant1[2] 
+    variable2 = participant2[2] 
+    
+    while variable1 > 0 and variable2 > 0:
+        if first2attack == 1:
+            attack_multi = attack_multiplier(participant1[1], participant2[1])
+            new_damage = attack_multi * participant1[3]
+            variable2 -= new_damage
+        else:
+            attack_multi = attack_multiplier(participant2[1], participant1[1])
+            new_damage = attack_multi * participant2[3]
+            variable1 -= new_damage
+        
+        rounds += 1
+        
+        first2attack = 1 if first2attack == 2 else 2
+        
+    winner = 1 if variable1 > 0 else 2
+    
+    return [winner, rounds]
+
+participant1 = ["Alomomola", "Water", 165, 76]
+participant2 = ["Luxio", "Electric", 243, 54]
+first2attack = 1
+
+result = fight(participant1, participant2, first2attack)
+print("Rounds:", result[1])
+print("Winner:", result[0])
 
 def tournament(participants):
     """
@@ -303,18 +312,33 @@ def tournament(participants):
     #                            to increment the number of wins of second participant in the WINS list.
     # 3. Return WINS list
     ######################
-    wins = []
-    for i in range(len(particiapnts)):
-        wins.append(0)
-    for j in participants:
-        opp_index = participants.index(x)+1
-            while opp index < (len(participants)):
-                home = fight(participants[i], participants[j], 1)
-                away = fight(participantts[j], participants[i], 2)
-                if total wins ==2:
-                    wins[(particpants.index(x)))}+=2
-                    wins[opp_index]+=1
+
+def tournament(participants):
+    wins = [0] * len(participants)
+    
+    num_participants = len(participants)
+    for i in range(num_participants):
+        for j in range(i + 1, num_participants):
+            result_home = fight(participants[i], participants[j], 1)
+            result_away = fight(participants[i], participants[j], 2)
+            
+            if result_home[0] == 1:
+                wins[i] += 1
+            else:
+                wins[j] += 1
+    
     return wins
+
+participants = [
+    ["Baltoy", "Ground", 325, 36],
+    ["Flareon", "Fire", 700, 11],
+    ["Alomomola", "Water", 165, 76],
+    ["Pikachu", "Grass", 367, 32],
+    ["Luxio", "Electric", 243, 54]
+]
+
+tournament_results = tournament(participants)
+print("Tournament Results:", tournament_results)
 
 # home game and an away game
 # play each participant twice
