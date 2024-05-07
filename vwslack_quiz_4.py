@@ -71,29 +71,20 @@ else:
 
 
 # WRITE YOUR SOLUTION FOR PROBLEM 1 HERE.
-def hawkid():
-    return(["Vivian Slack", "vwslack"])
-
-info = hawkid()
-name = info[0]
-hawkid = info[1]
-
 mode = input('Enter mode(min, max, avg): ')
-
 count = int(input('Enter count: '))
-
 values = []
             
-for i in range(count):
-            value = float(input('Enter value {i+1}: '))
-            values.append(value)
+    for i in range(count):
+                value = float(input('Enter value {i+1}: '))
+                values.append(value)
 
-print(name)
-print(hawkid)
-print(mode)
-print(count)
-print(len(values))
-print(values)
+    print(infor[0]) # print name
+    print(infor[1]) # print hawkid
+    print(mode) # print mode
+    print(count) # print count
+    print(len(values)) # print length of list
+    print(values) # print list
             
 ######################################################################
 # Problem 2 - Find the Minimum/Maximum/Average - (60 Points)
@@ -141,14 +132,6 @@ print(values)
 
 
 # WRITE YOUR SOLUTION FOR PROBLEM 2 HERE.
-
-def hawkid():
-    return(["Vivian Slack", "vwslack"])
-
-info = hawkid()
-name = info[0]
-hawkid = info[1]
-
 mode = input('Enter mode (min, max, avg): ')
 count = int(input('Enter count: '))
 values = []
@@ -186,7 +169,5 @@ elif mode == 'avg':
         total += value
     average = total / count
     print(average)
-            
-
 ######################################################################
 
