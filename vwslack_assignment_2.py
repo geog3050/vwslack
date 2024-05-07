@@ -20,18 +20,24 @@ def hawkid():
 
 ###################################################################### 
 def printFeatureClassNames(workspace):
-    pass
-
-import arcpy
-arcpy.env.workspace = ("C:/Users/vivianslack/Downloads/Geospatial_Programming/Assignments/HW_2/hw2.gdb")
-print(arcpy.env.workspace)
-
-fcList = arcpy.ListFeatureClasses()
-print(fcList)
-for fc in fcList:
-    desc = acrpy.Describe(fc)
-    geometry_type = desc.shapeType
-    print(f"{fc} is a {geometry_type} feature class")   
+    try: 
+        import arcpy # this imports arcpy
+        arcpy.env.workspace = workspace # defines workspace
+        fcs = arcpy.ListFeatureClasses() # establishes feature class list as the feature classes in the workspace
+        for i in fcs:
+            desc = arcpy.Describe(i) # this creates a describe object
+            if desc.shapeType == "Polygon":
+                print(fc + " is a polygon feature class")
+            elif desc.shapeType == "Polyline": # every feature class that has this shape type polygon will be printed
+                print(fc + " is a polyline feature class")
+            elif desc.shapeType == "Point": # every feature class that has the shape type point will be printed
+                print(fc + " is a point feature class")
+            else: # all other feature classes are printed
+                print("Type unknown")
+    except arcpy.ExecuteError:  
+        msgs = arcpy.GetMessages(2) 
+        arcpy.AddError(msgs) 
+        print("Tool Error:", msgs)
 
 ###################################################################### 
 # Problem 2 (20 Points)
@@ -41,19 +47,18 @@ for fc in fcList:
 # only if it is a numerical type
 
 ###################################################################### 
-def printNumericalFieldNames(inputFc, workspace):
-    pass
-
-import arcpy
-arcpy.env.workspace = "C:/Users/vivianslack/Downloads/Geospatial_Programming/Assignments/HW_2/hw2.gdb"
-
-fields = arcpy.ListFields("C:/Users/vivianslack/Downloads/Geospatial_Programming/Assignments/HW_2/hw2.gdb")
-
-for field in fields:
-    if field.type in ['Integer', 'SmallInteger', 'Single', 'Double']:
-        print(f"{field.name}: {field.type}")
-
-
+def printNumericalFieldNames(inputFc, workspace):      # inputFc is the filepath for a feature class and workspace is the filepath for the geodatabase.
+    try:
+        import arcpy
+            #this imports arcpy
+        arcpy.env.workspace = workspace                # defines the workspace in arcpy as the inputted "workplace" file path
+        desc=arcpy.Describe(inputFc)                   # creates a Describe object which pulls the properties of the input feature class (inputFc)
+        fields=desc.fields                             # establishes the fields object as the description of all the fields in the inputFc
+        for field in fields:
+            if field.type in ["Integer", "Float","OID","Double"]:    # all numeric field types
+                print(f"{field.name} has a type of {field.type}")
+    except arcpy.ExecuteError:
+       print(arcpy.GetMessages(2)) 
 ###################################################################### 
 # Problem 3 (30 Points)
 #
@@ -62,35 +67,21 @@ for field in fields:
 
 ###################################################################### 
 def exportFeatureClassesByShapeType(input_geodatabase, shapeType, output_geodatabase):
-    pass
-
-import arcpy
-import os
-
-input_geodatabase = ("C:/Users/vivianslack/Downloads/Geospatial_Programming/Assignments/HW_2/hw2.gdb")
-arcpy.env.workspace = input_geodatabase
-
-output_geodatabase = ("C:/Users/vivianslack/Downloads/Geospatial_Programming/Assignments/HW_2/hw2.gdb/hw2_output.gdb")
-
-if not arcpy.Exists(output_geodatabase):
-    arcpy.CreatleFileGDB_management(os.path.dirname(output_geodata), os.path.basename(out_geodatabase))
-
-arcpy.env.workspace = input_geodatabase
-feature_classes = arcpy.ListFeaturesClasses()
-
-for fc in feature_classes:
-    desc = arcpy.Describe(fc)
-    if desc.shapeType.lower() == shapeType.lower():
-        output_fc = os.path.join(output_geodatabase, desc.name)
-        arcpy.CopyFeatures_management(fc, output_fc)
-        print(output_fc)
- 
-for gdb, datasets, features in arcpy.da.Walk(env.workspace):
-    for dataset in datasets:
-        for feature in arcpy.ListFeatureClasses("Polyline_*", "POLYLINE", dataset):
-            arcpy.CopyFeatures_management(feature,os.path.join(outputGDB, "Polyline_"+dataset))
-
-
+    try:
+        import arcpy     # imports arcpy
+        import os        # import operating system module
+        arcpy.env.workspace = input_geodatabase # defines workspace in arcpy
+        out_folder_path = os.path.dirname(os.path.abspath(output_geodatabase)) # this creates new folder path
+        arcpy.CreateFileGDB_management(out_folder_path, output_geodatabase)    # this create new geodatabase in output_geodatabase
+        featureclasses = arcpy.ListFeatureClasses()    #establish feature class lit
+        for fc in featureclasses:
+            describe_fc = arcpy.Describe(fc)     # creates a describe object
+            if describe_fc.shapeType == shapeType:  shape type matches the input shape type
+                arcpy.Copy_management(fc, output_geodatabase + "/" + fc) # copies the feature class to the new geodatabase
+    except arcpy.ExecuteError: 
+        msgs = arcpy.GetMessages(2) 
+        arcpy.AddError(msgs) 
+        print("Tool Error:", msgs)
 ###################################################################### 
 # Problem 4 (40 Points)
 #
@@ -100,20 +91,17 @@ for gdb, datasets, features in arcpy.da.Walk(env.workspace):
 
 ###################################################################### 
 def exportAttributeJoin(inputFc, idFieldInputFc, inputTable, idFieldTable, workspace):
-    pass
-
-import arcpy
-import os
-
-inputFc = ''
-outlocation = '/Users/vivianslack/Downloads/Geospatial_Programming/Assignments/HW_2/hw2.gdb/hw2_prob4_output.gdb'
-outFeature = ''
-delimtedField = arcpy.AddFieldDelimeters(arcpy.env.workspace, '')
-expression = delimtedField + " + '' "
-joined_output = arcpy.conversion.FeatureClasstoFeatureClass(inputFc, outlocation, outfeatureClass, expression)
-print(joined_output)
-
-
+    try:
+        import arcpy    # imports arcpy
+        arcpy.env.workspace = workspace     # defines the workspace in arcpy as the inputted "workplace" file path
+        desc= arcpy.Describe(inputFc)    # creates a Describe object
+        new_fc = arcpy.AddJoin_management(inputFc, idFieldInputFc, inputTable, idFieldTable)    # joins the input feature class and input table as a new feature class
+        arcpy.conversion.ExportFeatures(new_fc, f"{desc.name}_joined")    # exports and saves the new feature class with the name of the input feature class plus _joined
+        arcpy.management.ValidateJoin(inputFc, idFieldInputFc, inputTable, idFieldTable)    # validate the join
+        print(arcpy.GetMessages())    # prints the join messages
+        
+    except arcpy.ExecuteError:
+       print(arcpy.GetMessages(2))
 ######################################################################
 # MAKE NO CHANGES BEYOND THIS POINT.
 ######################################################################
